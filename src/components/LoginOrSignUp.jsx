@@ -1,7 +1,29 @@
-import { useState } from "react";
+import { useMachine } from "@xstate/react";
+import { createMachine, assign } from 'xstate';
 
-export default function LoginOrSignUp() {
-  const [email, setEmail] = useState("")
+export const machine = createMachine({
+  initial: "editing",
+  context: {
+    value: ""
+  },
+  states: {
+    editing: {
+      on: {
+        CHANGE: {
+          actions: assign({
+            value: (ctx, e) => e.value
+          })
+        },
+      },
+    },
+  }
+});
+
+export default function LoginOrSignUp({ onSubmit }) {
+  const [current, send] = useMachine(machine);
+  
+  const { value } = current.context;
+
   return (
     <form
       onSubmit={e => {
@@ -12,8 +34,8 @@ export default function LoginOrSignUp() {
 
       <span>Email</span>
       <input
-        value={email}
-        onChange={e => setEmail(e.target.value)}
+        value={value}
+        onChange={e => send({ type: "CHANGE", value: e.target.value })}
       />
       <button>
         Continue
