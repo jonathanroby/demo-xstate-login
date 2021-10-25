@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 
 import {
   getAuth,
-  createUserWithEmailAndPassword,
+  // createUserWithEmailAndPassword,
   fetchSignInMethodsForEmail
 } from "firebase/auth";
 
@@ -17,7 +17,7 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+initializeApp(firebaseConfig);
 
 const auth = getAuth();
 
