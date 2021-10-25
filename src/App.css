@@ -46,3 +46,21 @@ button {
   height: 40px;
   width: 100px;
 }
+
+.error {
+  color: rgb(180, 134, 41);
+  border: 1px solid rgb(180, 134, 41);
+  background-color: rgb(255, 249, 223);
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  padding: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.input-error {
+  border: 1px solid rgb(180, 134, 41);
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-bottom: 0px;
+}
