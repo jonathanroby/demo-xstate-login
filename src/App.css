@@ -73,28 +73,11 @@ button[disabled] {
   padding: 5px;
   padding-left: 10px;
   padding-right: 10px;
+  font-size: 16px;
 }
 
 .input-error {
   border: 1px solid rgb(180, 134, 41);
-  border-bottom-left-radius: 0px;
-  border-bottom-right-radius: 0px;
-  border-bottom: 0px;
-}
-
-.service-error {
-  color: black;
-  border: 1px solid #b71c1c;
-  background-color: #f44336;
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-  padding: 5px;
-  padding-left: 10px;
-  padding-right: 10px;
-}
-
-.service-input-error {
-  border: 1px solid #b71c1c;
   border-bottom-left-radius: 0px;
   border-bottom-right-radius: 0px;
   border-bottom: 0px;
