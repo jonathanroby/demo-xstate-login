@@ -1,84 +1,37 @@
-import { useMachine } from "@xstate/react";
-import { createMachine, assign } from "xstate";
+import { useState } from "react";
 
 const validatePassword = password => {
   return password.length >= 5;
 };
 
-export const machine = createMachine({
-  initial: "editing",
-  context: {
-    value: ""
-  },
-  states: {
-    editing: {
-      on: {
-        CHANGE: {
-          actions: assign({
-            value: (ctx, e) => e.value
-          })
-        },
-        SUBMIT: "validating"
-      },
-      initial: "idle",
-      states: {
-        idle: {},
-        invalid: {}
-      }
-    },
-    validating: {
-      always: [
-        {
-          target: "validated",
-          cond: ctx => validatePassword(ctx.value)
-        },
-        {
-          target: "editing.invalid"
-        }
-      ]
-    },
-    validated: {
-      entry: "submit",
-      type: "final"
-    }
-  }
-});
-
-export default function Password({ onSubmit }) {
-  const [current, send] = useMachine(machine, {
-    actions: {
-      submit: (ctx) => onSubmit(ctx.value)
-    }
-  });
-
-  const { value } = current.context;
-
-  // const editing = current.matches("editing");
-  const invalid = current.matches({ editing: "invalid" });
-
+export default function Password({ onSubmit, onBack, email, password }) {
+  const [passwordStr, setPasswordStr] = useState(password);
+  const [validPassword, setValidPassword] = useState(false);
+  
   return (
-    <form
-      onSubmit={e => {
-        e.preventDefault();
-        send("SUBMIT");
-      }}
-    >
+    <form>
       <h1>Create a password</h1>
 
-      <span>Create a password for <b>email</b></span>
+      <span>Create a password for <b>{email}</b></span>
       <span>Passwords must be 5 characters or longer.</span>
 
       <input
-        className={invalid ? "input-error" : "none"}
-        value={value}
-        onChange={e => send({ type: "CHANGE", value: e.target.value })}
+        className={!validPassword ? "input-error" : "none"}
+        value={passwordStr}
+        onChange={e => {
+          e.preventDefault();
+          setPasswordStr(e.target.value);
+          setValidPassword(validatePassword(e.target.value));
+        }}
       />
-      {invalid ? (
+      {!validPassword ? (
         <div className="error">Passwords must be 5 characters or longer.</div>
       ) : null}
 
       <div className="navigation">
-        <button>Back</button><button>Continue</button>
+        <button onClick={() => onBack(passwordStr)}>Back</button>
+        <button disabled={!validPassword}
+                onClick={() => onSubmit(passwordStr)}>Continue</button>
       </div>
       
     </form>

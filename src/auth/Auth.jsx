@@ -16,7 +16,7 @@ const authMachine = createMachine({
       on: {
         NEXT: {
           target: "password",
-          actions: assign({ one: (_, e) => e.value })
+          actions: assign({ email: (_, e) => e.value })
         }
       }
     },
@@ -24,7 +24,12 @@ const authMachine = createMachine({
       on: {
         NEXT: {
           target: "success",
-          actions: assign({ two: (_, e) => e.value })
+          actions: assign({ password: (_, e) => e.value })
+        },
+        BACK: {
+          target: "email",
+          // How to DRY?
+          actions: assign({ password: (_, e) => e.value })
         }
       }
     },
@@ -41,10 +46,14 @@ function Auth() {
     <div className="App">
       {current.matches("email") ? (
         <LoginOrSignUp
+          email={current.context.email}
           onSubmit={value => send("NEXT", { value })}
         />
       ) : current.matches("password") ? (
         <Password
+          email={current.context.email}
+          password={current.context.password}
+          onBack={value => send("BACK", { value })}
           onSubmit={value => send("NEXT", { value })}
         />
       ) : current.matches("success") ? (

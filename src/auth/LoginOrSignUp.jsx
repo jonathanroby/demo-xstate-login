@@ -1,83 +1,37 @@
-import { useMachine } from "@xstate/react";
-import { createMachine, assign } from "xstate";
+import { useState } from "react";
 
 const validateEmail = email => {
   const re = /^[^\s@]+@[^\s@]+$/;
   return re.test(email);
 };
 
-export const machine = createMachine({
-  initial: "editing",
-  context: {
-    value: ""
-  },
-  states: {
-    editing: {
-      on: {
-        CHANGE: {
-          actions: assign({
-            value: (ctx, e) => e.value
-          })
-        },
-        SUBMIT: "validating"
-      },
-      initial: "idle",
-      states: {
-        idle: {},
-        invalid: {}
-      }
-    },
-    validating: {
-      always: [
-        {
-          target: "validated",
-          cond: ctx => validateEmail(ctx.value)
-        },
-        {
-          target: "editing.invalid"
-        }
-      ]
-    },
-    validated: {
-      entry: "submit",
-      type: "final"
-    }
-  }
-});
-
-export default function LoginOrSignUp({ onSubmit }) {
-  const [current, send] = useMachine(machine, {
-    actions: {
-      submit: ctx => onSubmit(ctx.value)
-    }
-  });
-
-  const { value } = current.context;
-
-  // const editing = current.matches("editing");
-  const invalid = current.matches({ editing: "invalid" });
+export default function LoginOrSignUp({ onSubmit, email }) {
+  const [emailStr, setEmailStr] = useState(email);
+  const [validEmail, setValidEmail] = useState(true);
 
   return (
-    <form
-      onSubmit={e => {
-        e.preventDefault();
-        send("SUBMIT");
-      }}
-    >
+    <form>
       <h1>Login or sign up</h1>
 
       <span>Email</span>
 
       <input
-        className={invalid ? "input-error" : "none"}
-        value={value}
-        onChange={e => send({ type: "CHANGE", value: e.target.value })}
+        className={!validEmail ? "input-error" : "none"}
+        value={emailStr}
+        onChange={e => {
+          e.preventDefault();
+          setEmailStr(e.target.value);
+          setValidEmail(validateEmail(e.target.value));
+        }}
       />
-      {invalid ? (
+      
+      {!validEmail ? (
         <div className="error">Please enter a valid email address.</div>
       ) : null}
 
-      <button>Continue</button>
+      <button disabled={!validEmail} onClick={() => {
+        onSubmit(emailStr);
+      }}>Continue</button>
     </form>
   );
 }
