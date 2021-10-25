@@ -16,7 +16,7 @@ export default function Password({ onSubmit, onBack, email, password }) {
       <span>Passwords must be 5 characters or longer.</span>
 
       <input
-        className={!validPassword ? "input-error" : "none"}
+        className={!validPassword && passwordStr.length !== 0 ? "input-error" : "none"}
         value={passwordStr}
         onChange={e => {
           e.preventDefault();
@@ -24,7 +24,7 @@ export default function Password({ onSubmit, onBack, email, password }) {
           setValidPassword(validatePassword(e.target.value));
         }}
       />
-      {!validPassword ? (
+      {!validPassword && passwordStr.length !== 0  ? (
         <div className="error">Passwords must be 5 characters or longer.</div>
       ) : null}
 
