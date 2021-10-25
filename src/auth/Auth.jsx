@@ -13,11 +13,18 @@ export function checkIfUserExists(values) {
   });
 }
 
+export function verifyPassword(values) {
+  return new Promise((resolve, reject) => {
+    resolve("password not correct");
+  });
+}
+
 const authMachine = createMachine({
   id: "auth",
   context: {
     email: "",
-    password: ""
+    password: "",
+    errors: ""
   },
   initial: "email",
   states: {
@@ -37,7 +44,7 @@ const authMachine = createMachine({
           {
             target: "enterPassword",
             cond: (ctx, event) => {
-              console.log("event ", event);
+              //
               return event.data;
             }
           },
@@ -64,11 +71,30 @@ const authMachine = createMachine({
     },
     enterPassword: {
       on: {
-        BACK: {
-          target: "email"
-        },
-        NEXT: {
-          target: "success"
+        BACK: "email",
+        NEXT: "verifyPassword"
+      }
+    },
+    verifyPassword: {
+      invoke: {
+        id: "verifyPassword",
+        src: ctx => verifyPassword(ctx.password),
+        onDone: [
+          {
+            target: "success",
+            cond: (ctx, event) => {
+              return event.data === true;
+            }
+          },
+          {
+            target: "enterPassword",
+            actions: assign({
+              errors: (ctx, event) => event.data
+            })
+          }
+        ],
+        onError: {
+          target: ""
         }
       }
     },
@@ -98,7 +124,9 @@ function Auth() {
       ) : current.matches("enterPassword") ? (
         <EnterPassword
           email={current.context.email}
+          errors={current.context.errors}
           onBack={() => send("BACK")}
+          onSubmit={value => send("NEXT", { value })}
         />
       ) : current.matches("success") ? (
         <div>Congratulations. You're logged in.</div>
