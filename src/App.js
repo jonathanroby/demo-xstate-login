@@ -1,10 +1,11 @@
-import LoginOrSignUp from "./components/LoginOrSignUp";
+import Auth from "./auth/Auth";
+
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <LoginOrSignUp />
+      <Auth />
     </div>
   );
 }
