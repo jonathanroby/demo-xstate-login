@@ -12,7 +12,7 @@ export default function EnterPassword({ onSubmit, onBack, email, errors }) {
       </span>
 
       <input
-        className={errors ? "service-input-error" : "none"}
+        className={errors ? "input-error" : "none"}
         value={password}
         onChange={e => {
           e.preventDefault();
@@ -20,11 +20,11 @@ export default function EnterPassword({ onSubmit, onBack, email, errors }) {
         }}
       />
 
-      {errors && <span className="service-error">{errors}</span>}
+      {errors && <span className="error">{errors}</span>}
 
       <div className="navigation">
         <button onClick={onBack}>Back</button>
-        <button onClick={onSubmit}>Continue</button>
+        <button onClick={() => onSubmit(password)}>Continue</button>
       </div>
     </form>
   );

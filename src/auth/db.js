@@ -2,7 +2,8 @@ import { initializeApp } from "firebase/app";
 
 import {
   getAuth,
-  // createUserWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
   fetchSignInMethodsForEmail
 } from "firebase/auth";
 
@@ -21,22 +22,39 @@ initializeApp(firebaseConfig);
 
 const auth = getAuth();
 
-export function checkIfUserExists(values) {
+export function checkEmailExists(email) {
   return new Promise((resolve, reject) => {
-    fetchSignInMethodsForEmail(auth, values.email)
+    fetchSignInMethodsForEmail(auth, email)
       .then(function(results) {
-        const userExists = results.length > 0;
-        resolve(userExists);
+        const emailExists = results.length > 0;
+        resolve(emailExists);
       })
       .catch(function(error) {
-        console.log("Error fetching user data:", error);
         reject(error);
+      });
+  });
+}
+
+export function createUser(values) {
+  return new Promise((resolve, reject) => {
+    createUserWithEmailAndPassword(auth, values.email, values.password)
+      .then(userCredential => {
+        resolve(true);
+      })
+      .catch(error => {
+        resolve(false);
       });
   });
 }
 
 export function verifyPassword(values) {
   return new Promise((resolve, reject) => {
-    resolve("password not correct");
+    signInWithEmailAndPassword(auth, values.email, values.password)
+      .then(userCredential => {
+        resolve(true);
+      })
+      .catch(error => {
+        reject(false);
+      });
   });
 }

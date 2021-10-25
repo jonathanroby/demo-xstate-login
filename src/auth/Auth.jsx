@@ -4,31 +4,35 @@ import { createMachine, assign } from "xstate";
 import LoginOrSignUp from "./LoginOrSignUp";
 import Password from "./Password";
 import EnterPassword from "./EnterPassword";
-import { verifyPassword, checkIfUserExists } from "./db";
+import { createUser, verifyPassword, checkEmailExists } from "./db";
 
-const assignPassword = assign({ password: (_, e) => e.value });
+const assignPassword = assign({
+  password: (_, e) => e.value
+});
+
+const initialContext = {
+  email: "",
+  password: "",
+  errors: ""
+};
 
 const authMachine = createMachine({
   id: "auth",
-  context: {
-    email: "",
-    password: "",
-    errors: ""
-  },
+  context: initialContext,
   initial: "email",
   states: {
     email: {
       on: {
         NEXT: {
-          target: "checkEmail",
+          target: "checkEmailExists",
           actions: assign({ email: (_, e) => e.value })
         }
       }
     },
-    checkEmail: {
+    checkEmailExists: {
       invoke: {
-        id: "checkingEmail",
-        src: ctx => checkIfUserExists(ctx),
+        id: "checkEmailExists",
+        src: ctx => checkEmailExists(ctx.email),
         onDone: [
           {
             target: "enterPassword",
@@ -39,14 +43,17 @@ const authMachine = createMachine({
           }
         ],
         onError: {
-          target: ""
+          target: "email",
+          actions: assign({
+            errors: "An error occurred."
+          })
         }
       }
     },
     password: {
       on: {
         NEXT: {
-          target: "success",
+          target: "createUser",
           actions: assignPassword
         },
         BACK: {
@@ -55,32 +62,42 @@ const authMachine = createMachine({
         }
       }
     },
+    createUser: {
+      invoke: {
+        id: "createUser",
+        src: (ctx, event) => createUser(ctx),
+        onDone: "success",
+        onError: {
+          target: "password",
+          actions: assign({ errors: "An error occurred." })
+        }
+      }
+    },
     enterPassword: {
       on: {
-        BACK: "email",
-        NEXT: "verifyPassword"
+        BACK: {
+          target: "email",
+          actions: assign(initialContext)
+        },
+        NEXT: {
+          target: "verifyPassword",
+          actions: assignPassword
+        }
       }
     },
     verifyPassword: {
       invoke: {
         id: "verifyPassword",
-        src: ctx => verifyPassword(ctx.password),
-        onDone: [
-          {
-            target: "success",
-            cond: (ctx, event) => {
-              return event.data === true;
-            }
-          },
-          {
-            target: "enterPassword",
-            actions: assign({
-              errors: (ctx, event) => event.data
-            })
-          }
-        ],
+        src: ({ email, password }) => verifyPassword({ email, password }),
+        onDone: {
+          target: "success",
+          cond: (_, event) => event.data;
+        },
         onError: {
-          target: ""
+          target: "enterPassword",
+          actions: assign({
+            errors: "That password does not match the email provided."
+          })
         }
       }
     },
