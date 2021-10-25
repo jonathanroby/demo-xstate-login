@@ -4,6 +4,8 @@ import { createMachine, assign } from "xstate";
 import LoginOrSignUp from "./LoginOrSignUp";
 import Password from "./Password";
 
+const assignPassword = assign({ password: (_, e) => e.value });
+
 const authMachine = createMachine({
   id: "auth",
   context: {
@@ -24,12 +26,11 @@ const authMachine = createMachine({
       on: {
         NEXT: {
           target: "success",
-          actions: assign({ password: (_, e) => e.value })
+          actions: assignPassword
         },
         BACK: {
           target: "email",
-          // How to DRY?
-          actions: assign({ password: (_, e) => e.value })
+          actions: assignPassword
         }
       }
     },

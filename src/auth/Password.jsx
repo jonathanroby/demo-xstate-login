@@ -7,7 +7,11 @@ const validatePassword = password => {
 export default function Password({ onSubmit, onBack, email, password }) {
   const [passwordStr, setPasswordStr] = useState(password);
   const [validPassword, setValidPassword] = useState(validatePassword(passwordStr));
-  
+
+  // The second condition is just because I don't want to see an error
+  // when initially visiting step. Obviously a better solution would be
+  // needed here.
+  const showError = !validPassword && passwordStr.length !== 0;
   return (
     <form>
       <h1>Create a password</h1>
@@ -16,7 +20,7 @@ export default function Password({ onSubmit, onBack, email, password }) {
       <span>Passwords must be 5 characters or longer.</span>
 
       <input
-        className={!validPassword && passwordStr.length !== 0 ? "input-error" : "none"}
+        className={showError ? "input-error" : "none"}
         value={passwordStr}
         onChange={e => {
           e.preventDefault();
@@ -24,7 +28,7 @@ export default function Password({ onSubmit, onBack, email, password }) {
           setValidPassword(validatePassword(e.target.value));
         }}
       />
-      {!validPassword && passwordStr.length !== 0  ? (
+      {showError  ? (
         <div className="error">Passwords must be 5 characters or longer.</div>
       ) : null}
 
