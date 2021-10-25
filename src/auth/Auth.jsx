@@ -4,6 +4,7 @@ import { createMachine, assign } from "xstate";
 import LoginOrSignUp from "./LoginOrSignUp";
 import Password from "./Password";
 import EnterPassword from "./EnterPassword";
+import EnterName from "./EnterName";
 import { createUser, verifyPassword, checkEmailExists } from "./db";
 
 const assignPassword = assign({
@@ -66,7 +67,7 @@ const authMachine = createMachine({
       invoke: {
         id: "createUser",
         src: (ctx, event) => createUser(ctx),
-        onDone: "success",
+        onDone: "enterName",
         onError: {
           target: "password",
           actions: assign({ errors: "An error occurred." })
@@ -101,6 +102,11 @@ const authMachine = createMachine({
         }
       }
     },
+    enterName: {
+      on: {
+        NEXT: "success"
+      }
+    },
     success: {
       type: "final"
     }
@@ -131,6 +137,8 @@ function Auth() {
           onBack={() => send("BACK")}
           onSubmit={value => send("NEXT", { value })}
         />
+      ) : current.matches("enterName") ? (
+        <EnterName onSubmit={value => send("NEXT", { value })}/>
       ) : current.matches("success") ? (
         <div>Congratulations. You're logged in.</div>
       ) : null}

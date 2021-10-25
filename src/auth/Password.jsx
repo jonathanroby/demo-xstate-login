@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 const validatePassword = password => {
-  return password.length >= 5;
+  return password.length >= 6;
 };
 
 export default function Password({ onSubmit, onBack, email, password }) {
@@ -17,7 +17,7 @@ export default function Password({ onSubmit, onBack, email, password }) {
       <h1>Create a password</h1>
 
       <span>Create a password for <b>{email}</b></span>
-      <span>Passwords must be 5 characters or longer.</span>
+      <span>Passwords must be 6 characters or longer.</span>
 
       <input
         className={showError ? "input-error" : "none"}
@@ -29,7 +29,7 @@ export default function Password({ onSubmit, onBack, email, password }) {
         }}
       />
       {showError  ? (
-        <div className="error">Passwords must be 5 characters or longer.</div>
+        <div className="error">Passwords must be 6 characters or longer.</div>
       ) : null}
 
       <div className="navigation">
