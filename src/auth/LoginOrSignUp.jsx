@@ -1,8 +1,9 @@
 import { useMachine } from "@xstate/react";
 import { createMachine, assign } from "xstate";
 
-const validatePassword = password => {
-  return password.length >= 8;
+const validateEmail = email => {
+  const re = /^[^\s@]+@[^\s@]+$/;
+  return re.test(email);
 };
 
 export const machine = createMachine({
@@ -30,7 +31,7 @@ export const machine = createMachine({
       always: [
         {
           target: "validated",
-          cond: ctx => validatePassword(ctx.value)
+          cond: ctx => validateEmail(ctx.value)
         },
         {
           target: "editing.invalid"
@@ -38,13 +39,18 @@ export const machine = createMachine({
       ]
     },
     validated: {
+      entry: "submit",
       type: "final"
     }
   }
 });
 
-export default function Password({ onSubmit }) {
-  const [current, send] = useMachine(machine);
+export default function LoginOrSignUp({ onSubmit }) {
+  const [current, send] = useMachine(machine, {
+    actions: {
+      submit: ctx => onSubmit(ctx.value)
+    }
+  });
 
   const { value } = current.context;
 
@@ -58,10 +64,9 @@ export default function Password({ onSubmit }) {
         send("SUBMIT");
       }}
     >
-      <h1>Create a password</h1>
+      <h1>Login or sign up</h1>
 
-      <span>Create a password for <b>email</b></span>
-      <span>Passwords must be 5 characters or longer.</span>
+      <span>Email</span>
 
       <input
         className={invalid ? "input-error" : "none"}
@@ -69,13 +74,10 @@ export default function Password({ onSubmit }) {
         onChange={e => send({ type: "CHANGE", value: e.target.value })}
       />
       {invalid ? (
-        <div className="error">Passwords must be 5 characters or longer.</div>
+        <div className="error">Please enter a valid email address.</div>
       ) : null}
 
-      <div className="navigation">
-        <button>Back</button><button>Continue</button>
-      </div>
-      
+      <button>Continue</button>
     </form>
   );
 }

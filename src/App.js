@@ -1,11 +1,11 @@
-// import LoginOrSignUp from "./components/LoginOrSignUp";
-import Password from "./components/Password";
+import Auth from "./auth/Auth";
+
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <Password />
+      <Auth />
     </div>
   );
 }
