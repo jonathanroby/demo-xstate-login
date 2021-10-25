@@ -91,7 +91,7 @@ const authMachine = createMachine({
         src: ({ email, password }) => verifyPassword({ email, password }),
         onDone: {
           target: "success",
-          cond: (_, event) => event.data;
+          cond: (_, event) => event.data,
         },
         onError: {
           target: "enterPassword",
