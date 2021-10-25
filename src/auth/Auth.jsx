@@ -4,20 +4,9 @@ import { createMachine, assign } from "xstate";
 import LoginOrSignUp from "./LoginOrSignUp";
 import Password from "./Password";
 import EnterPassword from "./EnterPassword";
+import { verifyPassword, checkIfUserExists } from "./db";
 
 const assignPassword = assign({ password: (_, e) => e.value });
-
-export function checkIfUserExists(values) {
-  return new Promise((resolve, reject) => {
-    resolve(true);
-  });
-}
-
-export function verifyPassword(values) {
-  return new Promise((resolve, reject) => {
-    resolve("password not correct");
-  });
-}
 
 const authMachine = createMachine({
   id: "auth",
@@ -39,14 +28,11 @@ const authMachine = createMachine({
     checkEmail: {
       invoke: {
         id: "checkingEmail",
-        src: ctx => checkIfUserExists(ctx.value),
+        src: ctx => checkIfUserExists(ctx),
         onDone: [
           {
             target: "enterPassword",
-            cond: (ctx, event) => {
-              //
-              return event.data;
-            }
+            cond: (ctx, event) => event.data
           },
           {
             target: "password"
