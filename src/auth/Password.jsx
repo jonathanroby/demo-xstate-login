@@ -6,7 +6,7 @@ const validatePassword = password => {
 
 export default function Password({ onSubmit, onBack, email, password }) {
   const [passwordStr, setPasswordStr] = useState(password);
-  const [validPassword, setValidPassword] = useState(false);
+  const [validPassword, setValidPassword] = useState(validatePassword(passwordStr));
   
   return (
     <form>
