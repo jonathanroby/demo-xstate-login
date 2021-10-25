@@ -49,7 +49,7 @@ export default function LoginOrSignUp({ onSubmit }) {
 
   const { value } = current.context;
 
-  const editing = current.matches("editing");
+  // const editing = current.matches("editing");
   const invalid = current.matches({ editing: "invalid" });
 
   return (
