@@ -42,7 +42,7 @@ export function createUser(values) {
         resolve(true);
       })
       .catch(error => {
-        resolve(false);
+        reject(false);
       });
   });
 }
