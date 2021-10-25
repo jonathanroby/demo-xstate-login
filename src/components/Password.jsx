@@ -72,7 +72,10 @@ export default function Password({ onSubmit }) {
         <div className="error">Passwords must be 5 characters or longer.</div>
       ) : null}
 
-      <button>Continue</button>
+      <div className="navigation">
+        <button>Back</button><button>Continue</button>
+      </div>
+      
     </form>
   );
 }
