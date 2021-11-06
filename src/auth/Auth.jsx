@@ -1,23 +1,24 @@
 import { useMachine } from "@xstate/react";
 
 import LoginOrSignUp from "./LoginOrSignUp";
-import Password from "./Password";
+import AddPassword from "./Password";
 import EnterPassword from "./EnterPassword";
 import EnterName from "./EnterName";
 import authMachine from "./authMachine.js"
 
 function Auth() {
   const [current, send] = useMachine(authMachine);
+  
 
   return (
     <div className="App">
-      {current.matches("email") ? (
+      {current.matches("loginOrSignUp") ? (
         <LoginOrSignUp
           email={current.context.email}
           onSubmit={value => send("NEXT", { value })}
         />
       ) : current.matches("addPassword") ? (
-        <Password
+        <AddPassword
           email={current.context.email}
           password={current.context.password}
           onBack={value => send("BACK", { value })}
